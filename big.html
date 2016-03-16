@@ -1,4 +1,6 @@
-<canvas id=c width=1000 height=1000>
+<meta charset=utf-8>
+<canvas id=c>
+<style>*{margin:0;padding:0;border:0}body{background:#000;}canvas{border:1px solid;cursor:crosshair}</style>
 <script>
 
 ctx = c.getContext("2d");
@@ -6,77 +8,127 @@ ctx = c.getContext("2d");
 // Draw the mandelbrot set on a 1000x1000 canvas (representing x between -2 and 2, and y between -2 and 2)
 // related: https://plus.maths.org/content/computing-mandelbrot-set
 // related: https://au.answers.yahoo.com/question/index?qid=20071231170737AAQznDP
-
-// Number of iterations (precision)
+zoom_x = 0;
+zoom_y = 0;
 iterations = 100;
+c.width = 1000;
+c.height = 1000;
+limit_left = -2.5;
+limit_top = -2.5;
+limit_right = 2.5;
+limit_bottom = 2.5;
+relative_width = 5;
+relative_height = 5;
+x = 0;
+y = 0;
 
-// Loop on x
-for(x = 0; x < 1000; x++){
+
+draw_column = function(){
+    
+  for(grouped_colums = 0; grouped_colums < 10; grouped_colums++){
   
-  // Consider x between -2 and 2
-  relative_x = x / 250 - 2;
-  
-  // Loop on y
-  for(y = 0; y < 1000; y++){
-  
-    // Consider y between 1 and -1
-    relative_y = - (y / 250 - 2);
+    // Increment x
+    x++;
     
-    // At this pixel, c is the complex number relative_x + i * relative_y
+    // Consider x in the current interval (visible viewport)
+    relative_x = limit_left + relative_width * (x / c.width);
     
-    // The series tested in the Mandelbrot set is defined by:
+    // Loop on y
+    for(y = 0; y < c.height; y++){
     
-    // Z[0] = 0
-    // Z[n] = Z[n-1]² + c
-    
-    // We start with z = 0 and update it at each iteration.
-    // If the series diverges (|Zn| > 2), c is outside the Mandelbrot set
-    // If it never diverges, c is in the set.
-    // Each iteration brings more precision to the set, and the new divergent points found at each iteration can be shown by a different color.
-    // Z(n) is complex, so we use Zx and Zy for real and imaginary parts.
-    zx = 0;
-    zy = 0;
-    diverge = false;
-    
-    // Iterate
-    for(i = 0; i < iterations; i++){
+      // Consider y in the current interval (visible viewport)
+      relative_y = limit_top + relative_height * (y / c.height);
       
-      // Compute the i-th iteration:
-      // z[i] = z[i-1]² + c
-      //
-      // If we decompose the complex numbers in the form a + i * b:
-      //
-      // a[z[i]] + i * b[z[i]] = (a[z[i-1]] + i * b[z[i-1]])² + a[c] + i * b[c]
-      //                       = a[z[i-1]]² + 2 * a[z[i-1]] * i * b[z[i-1]] + (i * b[z[i-1]])² + a[c] + i * b[c]
-      //                       = (a[z[i-1]]² - b[z[i-1]]² + a[c]) + i * (2 * a[z[i-1]] * [b[z[i-&]] + b[c])
-      //
-      // Using our variables:
-      //
-      // real part of Z[n]:
-      // zx = zx² - zy² +  relative_x
-      //
-      // imaginary part of Z[n]:
-      // zy = zx * zy * 2 + relative_y
+      // At this pixel, c is the complex number relative_x + i * relative_y
       
-      backup_zx = zx;
-      zx = zx * zx - zy * zy + relative_x;
-      zy = backup_zx * zy * 2 + relative_y;
+      // The series tested in the Mandelbrot set is defined by:
       
-      // Stop and apply a color if |Zn| > 2, i.e. zx² + zy² > 4
-      if(zx * zx + zy * zy > 4){
-        ctx.fillStyle = "hsl("+ i * 5 + ", 50%, 50%)";
+      // Z[0] = 0
+      // Z[n] = Z[n-1]² + c
+      
+      // We start with z = 0 and update it at each iteration.
+      // If the series diverges (|Zn| > 2), c is outside the Mandelbrot set
+      // If it never diverges, c is in the set.
+      // Each iteration brings more precision to the set, and the new divergent points found at each iteration can be shown by a different color.
+      // Z(n) is complex, so we use Zx and Zy for real and imaginary parts.
+      zx = 0;
+      zy = 0;
+      diverge = false;
+      
+      // Iterate
+      for(i = 0; i < iterations; i++){
+        
+        // Compute the i-th iteration:
+        // z[i] = z[i-1]² + c
+        //
+        // If we decompose the complex numbers in the form a + i * b:
+        //
+        // a[z[i]] + i * b[z[i]] = (a[z[i-1]] + i * b[z[i-1]])² + a[c] + i * b[c]
+        //                       = a[z[i-1]]² + 2 * a[z[i-1]] * i * b[z[i-1]] + (i * b[z[i-1]])² + a[c] + i * b[c]
+        //                       = (a[z[i-1]]² - b[z[i-1]]² + a[c]) + i * (2 * a[z[i-1]] * [b[z[i-&]] + b[c])
+        //
+        // Using our variables:
+        //
+        // real part of Z[n]:
+        // zx = zx² - zy² +  relative_x
+        //
+        // imaginary part of Z[n]:
+        // zy = zx * zy * 2 + relative_y
+        
+        backup_zx = zx;
+        zx = zx * zx - zy * zy + relative_x;
+        zy = backup_zx * zy * 2 + relative_y;
+        
+        // Stop and apply a color if |Zn| > 2, i.e. zx² + zy² > 4
+        if(zx * zx + zy * zy > 4){
+          ctx.fillStyle = "hsl("+ i * 5 + ", 50%, 50%)";
+          ctx.fillRect(x, y, 1, 1);
+          diverge = true;
+          break;
+        }
+      }
+      
+      // If the iterations didn't diverge, color in black
+      if(!diverge){
+        ctx.fillStyle = "#000";
         ctx.fillRect(x, y, 1, 1);
-        diverge = true;
-        break;
       }
     }
-    
-    // If the iterations didn't diverge, color in black
-    if(!diverge){
-      ctx.fillStyle = "#000";
-      ctx.fillRect(x, y, 1, 1);
-    }
   }
+  
+  // Next column
+  requestAnimationFrame(draw_column);
 }
+
+// Click on the canvas
+c.onclick = function(e){
+
+  // Double the current zoom
+  relative_width /= 2;
+  relative_height /= 2;
+  
+  // Double the iterations
+  iterations += 50;
+  
+  // Retrieve the click coordinates
+  zoom_x = e.pageX;
+  zoom_y = e.pageY;
+  
+  // Consider them in the current viewport
+  relative_zoom_x = limit_left + (limit_right - limit_left) * zoom_x / c.width;
+  relative_zoom_y = limit_top + (limit_bottom - limit_top) * zoom_y / c.height;
+  
+  // Set viewport bounds
+  limit_left = relative_zoom_x - relative_width / 2;
+  limit_right = relative_zoom_x + relative_width / 2;
+  limit_top = relative_zoom_y - relative_height / 2;
+  limit_bottom = relative_zoom_y + relative_height / 2;
+  
+  // Reset column counter
+  x = 0;
+}
+
+// Start drawing
+draw_column();
 
 </script>
