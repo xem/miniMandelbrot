@@ -97,7 +97,7 @@ draw_column = function(){
   }
   
   // Next column
-  requestAnimationFrame(draw_column);
+  if (x < c.width) requestAnimationFrame(draw_column);
 }
 
 // Click on the canvas
@@ -126,6 +126,7 @@ c.onclick = function(e){
   
   // Reset column counter
   x = 0;
+  draw_column();
 }
 
 // Start drawing
