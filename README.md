@@ -7,7 +7,7 @@ Golfed with @Xen_the, @keithclarkcouk, @veubeke, @joseprio @subzey @aemkei @p01 
 
 - Big, zoomable with click, commented source code: http://xem.github.io/miniMandelbrot/big.html
 
-- Super mini version: http://xem.github.io/miniMandelbrot/index.html (143b)
+- Super mini version (may freeze your browser for ~30 seconds): http://xem.github.io/miniMandelbrot/index.html (143b)
 
 - Tweet: https://twitter.com/MaximeEuziere/status/843397121369956354
 
